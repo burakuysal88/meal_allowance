@@ -504,17 +504,48 @@ def build_pdf(output_path, name, role, company, date_range_str,
 # ---------------------------------------------------------------------------
 # Main pipeline
 # ---------------------------------------------------------------------------
-def main():
+def ask(prompt, default=None):
+    suffix = f" [{default}]" if default else ""
+    val = input(f"{prompt}{suffix}: ").strip().strip('"').strip("'")
+    return val if val else default
+
+
+def run():
+    interactive_mode = not bool(sys.argv[1:])  # no CLI args at all -> was interactive
     parser = argparse.ArgumentParser(description='Generate a Meal Allowance Impact Analysis PDF from a Spendesk export.')
-    parser.add_argument('--csv', required=True, help='Path to your Spendesk CSV export')
-    parser.add_argument('--name', required=True, help='Your full name (shown on the report)')
-    parser.add_argument('--role', default='Service Technician', help='Your job title')
-    parser.add_argument('--company', default='Magazino GmbH', help='Company name')
+    parser.add_argument('--csv', default=None, help='Path to your Spendesk CSV export')
+    parser.add_argument('--name', default=None, help='Your full name (shown on the report)')
+    parser.add_argument('--role', default=None, help='Your job title')
+    parser.add_argument('--company', default=None, help='Company name')
     parser.add_argument('--output', default=None, help='Output PDF path (default: auto-generated)')
     args = parser.parse_args()
 
-    if not os.path.exists(args.csv):
+    # Interactive mode: if no --csv was given on the command line, ask for
+    # everything step by step instead. This is the path non-technical
+    # colleagues should use (just double-click run_report.bat / .command).
+    if not args.csv:
+        print("=" * 60)
+        print(" Meal Allowance Impact Report - interactive setup")
+        print("=" * 60)
+        print("Answer the questions below. Press Enter to accept a")
+        print("suggested value shown in [brackets].\n")
+        args.csv = ask("Path to your Spendesk CSV export (drag & drop the file here)")
+        while not args.csv or not os.path.exists(args.csv):
+            print(f"  Could not find that file: {args.csv!r}")
+            args.csv = ask("Please enter the path to your Spendesk CSV export again")
+        args.name = ask("Your full name")
+        while not args.name:
+            args.name = ask("Your full name (required)")
+        args.role = ask("Your job title", default='Service Technician')
+        args.company = ask("Company name", default='Magazino GmbH')
+        print()
+
+    if not args.csv or not os.path.exists(args.csv):
         sys.exit(f"ERROR: file not found: {args.csv}")
+    if not args.name:
+        sys.exit("ERROR: --name is required")
+    args.role = args.role or 'Service Technician'
+    args.company = args.company or 'Magazino GmbH'
 
     work_dir = os.path.dirname(os.path.abspath(args.output)) if args.output else os.getcwd()
     os.makedirs(work_dir, exist_ok=True)
@@ -596,6 +627,27 @@ def main():
     )
 
     print(f"\nDone! Report saved to: {output_path}")
+
+    if interactive_mode:
+        input("\nPress Enter to close this window...")
+
+
+def main():
+    interactive_mode = not bool(sys.argv[1:])
+    try:
+        run()
+    except SystemExit as e:
+        # our own sys.exit(...) calls with a friendly message
+        if e.code and not isinstance(e.code, int):
+            print(str(e.code))
+        if interactive_mode:
+            input("\nSomething went wrong (see message above). Press Enter to close...")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\nUnexpected error: {e}")
+        if interactive_mode:
+            input("\nSomething went wrong. Press Enter to close...")
+        sys.exit(1)
 
 
 if __name__ == '__main__':

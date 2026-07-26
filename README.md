@@ -5,33 +5,45 @@ This tool turns **your own** Spendesk expense history into the same
 **your** trips and **your** numbers. Nothing is shared between
 colleagues — everyone runs it on their own laptop, with their own data.
 
-## What you'll need
+## 🚀 Quick start (no coding, no command line)
 
-- A computer with Python 3 installed (Mac, Windows, or Linux all work)
-- About 10 minutes
+**1) Get the files.**
+On the GitHub page, click the green **"Code"** button → **"Download ZIP"**.
+Unzip it anywhere (e.g. your Desktop).
 
-## Step 1 — Export your data from Spendesk
+**2) Install Python** (skip if you already have it).
+Go to [python.org/downloads](https://www.python.org/downloads/), download
+the installer, run it. **On the first screen, tick the box that says
+"Add Python to PATH"** before clicking Install — this step is important.
 
-1. Log in to Spendesk
-2. Go to **Expenses**
-3. Filter to your own transactions (usually already the default view)
-4. Click **Export** and choose **CSV**
-5. Save the file somewhere you can find it, e.g. your Desktop
+**3) Export your data from Spendesk.**
+Spendesk → **Expenses** → filter to your own transactions → **Export** → **CSV**.
+Save it somewhere you can find it (e.g. Desktop).
 
-## Step 2 — Install Python packages (one-time setup)
+**4) Double-click the launcher for your system:**
+- Windows: `run_report_windows.bat`
+- Mac: `run_report_mac.command`
 
-Open a terminal (Mac: **Terminal** app, Windows: **PowerShell**) and run:
+A black window will open and ask you a few simple questions:
+- the path to your Spendesk CSV (you can literally **drag the file into
+  the window** and it will fill in the path for you)
+- your name
+- your job title (press Enter to use the suggestion)
+- your company name (press Enter to use the suggestion)
 
-```
-pip install pandas matplotlib reportlab
-```
+**5) Done.** A file named `Meal_Allowance_Impact_Analysis_YourName.pdf`
+will appear in the same folder. Open it like any PDF.
 
-If `pip` isn't recognized, try `pip3` instead.
+If anything goes wrong, the window will show a message and stay open
+(it won't just disappear) — take a screenshot of the message and ask
+for help.
 
-## Step 3 — Run the report generator
+---
 
-Put `generate_meal_report.py` (included in this folder) somewhere easy to
-find, e.g. next to your exported CSV. Then, in the same terminal, run:
+## Advanced: command-line usage
+
+If you're comfortable with a terminal, you can skip the questions and
+run everything in one line instead:
 
 ```
 python generate_meal_report.py --csv "my_export.csv" --name "Your Name" --role "Your Job Title"
@@ -49,12 +61,6 @@ python generate_meal_report.py --csv "C:\Users\jsmith\Desktop\spendesk_export.cs
 ```
 
 If `python` isn't recognized, try `python3` instead.
-
-## Step 4 — Get your PDF
-
-A file named `Meal_Allowance_Impact_Analysis_Your_Name.pdf` will appear in
-the same folder. That's your personalized report — ready to read, print,
-or share.
 
 ## Optional settings
 
