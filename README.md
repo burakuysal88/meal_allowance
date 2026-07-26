@@ -12,9 +12,14 @@ On the GitHub page, click the green **"Code"** button → **"Download ZIP"**.
 Unzip it anywhere (e.g. your Desktop).
 
 **2) Install Python** (skip if you already have it).
-Go to [python.org/downloads](https://www.python.org/downloads/), download
-the installer, run it. **On the first screen, tick the box that says
-"Add Python to PATH"** before clicking Install — this step is important.
+- **Windows:** go to [python.org/downloads](https://www.python.org/downloads/),
+  download the installer, run it. **On the first screen, tick the box
+  that says "Add Python to PATH"** before clicking Install — this step
+  is important.
+- **Mac:** usually already installed. If not, [python.org/downloads](https://www.python.org/downloads/).
+- **Linux:** usually already installed. If not: `sudo apt install python3 python3-pip`
+  (Debian/Ubuntu), `sudo dnf install python3 python3-pip` (Fedora), or
+  `sudo pacman -S python python-pip` (Arch).
 
 **3) Export your data from Spendesk.**
 Spendesk → **Expenses** → filter to your own transactions → **Export** → **CSV**.
@@ -23,6 +28,9 @@ Save it somewhere you can find it (e.g. Desktop).
 **4) Double-click the launcher for your system:**
 - Windows: `run_report_windows.bat`
 - Mac: `run_report_mac.command`
+- Linux: `run_report_linux.sh` (if double-clicking doesn't run it — see
+  note below — right-click → *Run as a program*, or open a terminal in
+  the folder and type `./run_report_linux.sh`)
 
 A black window will open and ask you a few simple questions:
 - the path to your Spendesk CSV (you can literally **drag the file into
@@ -97,6 +105,27 @@ recorded that day. If you sometimes forget to log a meal, or a company
 card was used instead of Spendesk for a specific meal, that day may be
 undercounted. This is a known limitation — see the report's own
 "Methodology" section for full details.
+
+**(Linux) Double-clicking `run_report_linux.sh` opens it as a text file, or nothing happens**
+Most Linux file managers require a file to be marked "executable" and
+won't run scripts on double-click by default for security reasons.
+Two options:
+- Right-click the file → *Properties* → *Permissions* tab → tick
+  *Allow executing file as program* → then double-click again (or
+  right-click → *Run* / *Run as a program*, wording varies by desktop).
+- Or open a terminal in this folder and run:
+  ```
+  chmod +x run_report_linux.sh
+  ./run_report_linux.sh
+  ```
+
+**(Linux) "error: externally-managed-environment" while installing packages**
+Modern Ubuntu/Debian block regular `pip install`. The launcher script
+already retries this automatically; if you're installing manually
+instead, use:
+```
+python3 -m pip install --user --break-system-packages pandas matplotlib reportlab
+```
 
 ## A note on the methodology
 

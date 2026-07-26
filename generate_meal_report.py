@@ -506,8 +506,20 @@ def build_pdf(output_path, name, role, company, date_range_str,
 # ---------------------------------------------------------------------------
 def ask(prompt, default=None):
     suffix = f" [{default}]" if default else ""
-    val = input(f"{prompt}{suffix}: ").strip().strip('"').strip("'")
+    try:
+        val = input(f"{prompt}{suffix}: ").strip().strip('"').strip("'")
+    except (EOFError, KeyboardInterrupt):
+        print("\nCancelled.")
+        sys.exit(1)
     return val if val else default
+
+
+def safe_pause(message):
+    """Pause for Enter, but never crash if stdin is closed/unavailable."""
+    try:
+        input(message)
+    except (EOFError, KeyboardInterrupt):
+        pass
 
 
 def run():
@@ -629,7 +641,7 @@ def run():
     print(f"\nDone! Report saved to: {output_path}")
 
     if interactive_mode:
-        input("\nPress Enter to close this window...")
+        safe_pause("\nPress Enter to close this window...")
 
 
 def main():
@@ -641,12 +653,12 @@ def main():
         if e.code and not isinstance(e.code, int):
             print(str(e.code))
         if interactive_mode:
-            input("\nSomething went wrong (see message above). Press Enter to close...")
+            safe_pause("\nSomething went wrong (see message above). Press Enter to close...")
         sys.exit(1)
     except Exception as e:
         print(f"\nUnexpected error: {e}")
         if interactive_mode:
-            input("\nSomething went wrong. Press Enter to close...")
+            safe_pause("\nSomething went wrong. Press Enter to close...")
         sys.exit(1)
 
 
